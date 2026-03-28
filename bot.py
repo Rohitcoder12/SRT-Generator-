@@ -30,7 +30,8 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 MODEL_NAME = os.environ.get("WHISPER_MODEL", "small")
 
 print(f"⏳ Loading Whisper model: {MODEL_NAME} ...")
-model = whisper.load_model(MODEL_NAME)
+# Use /tmp so model isn't baked into Docker image (keeps image < 4 GB on Railway)
+model = whisper.load_model(MODEL_NAME, download_root="/tmp/whisper_models")
 print("✅ Whisper model loaded!")
 
 # ── In-memory state: user_id → { file_path, segments, detected_lang } ─────────
