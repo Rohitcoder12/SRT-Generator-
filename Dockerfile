@@ -1,6 +1,6 @@
 FROM python:3.11-slim
 
-# Install ffmpeg + clean up in single layer to minimize image size
+# ffmpeg only — no build tools needed
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
     && apt-get clean \
@@ -9,12 +9,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /app
 
 COPY requirements.txt .
-
-# No cache = smaller image (~300 MB saved)
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# ✅ Model downloads at runtime into /tmp (NOT baked into image)
-# This keeps image well under Railway's 4 GB limit
+# Model downloads at first startup into /tmp (NOT in image)
 CMD ["python", "bot.py"]
